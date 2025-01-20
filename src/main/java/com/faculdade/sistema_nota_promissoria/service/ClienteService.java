@@ -17,12 +17,36 @@ public class ClienteService {
 	ClienteRepository clienteRepository;
 	
 	
+	public Cliente findCliente(Long id) {
+		var cliente = clienteRepository.findById(id);
+		if(cliente.isEmpty())
+			return null;
+		return cliente.get();
+	}
+	
 	public Page<Cliente> findAllCliente(Pageable pageable) {
 		return clienteRepository.findAll(pageable);
 	}
 	
 	public Cliente save(Cliente cliente) {
 		return clienteRepository.save(cliente);
+		
+	}
+	
+	
+	public Cliente update(Long idOldCliente, Cliente clienteUpdated) {
+		Cliente oldCliente = findCliente(idOldCliente);
+		oldCliente.setNome(clienteUpdated.getNome());
+		oldCliente.setEmail(clienteUpdated.getEmail());
+		oldCliente.setTelefone(clienteUpdated.getTelefone());
+		return save(oldCliente);
+		
+	}
+	
+	public Void delete(Long id) {
+		Cliente cliente = findCliente(id);
+		clienteRepository.delete(cliente);
+		return null;
 		
 	}
 
