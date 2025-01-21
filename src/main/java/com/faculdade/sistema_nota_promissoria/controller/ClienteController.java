@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.faculdade.sistema_nota_promissoria.dtos.ClienteComNotasDTO;
 import com.faculdade.sistema_nota_promissoria.dtos.CustomPageDTO;
 import com.faculdade.sistema_nota_promissoria.model.Cliente;
 import com.faculdade.sistema_nota_promissoria.service.ClienteService;
@@ -57,6 +58,15 @@ public class ClienteController {
 
         return ResponseEntity.ok(customPage);
     }
+	
+	@GetMapping("/{id}/notas")
+	public ResponseEntity<ClienteComNotasDTO> getClienteComNotas(@PathVariable Long id, @RequestParam(required = false) String status){
+		 if (status == null) {
+		        return ResponseEntity.status(HttpStatus.OK).body(clienteService.getClienteComNotas(id));
+		    } else {
+		        return ResponseEntity.status(HttpStatus.OK).body(clienteService.getClienteComNotasByStatus(id, status));
+		    }
+	}
 	
 	@PostMapping
 	public ResponseEntity<Cliente> save(@RequestBody @Valid @NotNull Cliente cliente) {
