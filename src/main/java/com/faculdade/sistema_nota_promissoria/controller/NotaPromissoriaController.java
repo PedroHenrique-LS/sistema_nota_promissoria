@@ -3,6 +3,8 @@ package com.faculdade.sistema_nota_promissoria.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +22,11 @@ public class NotaPromissoriaController {
 	
 	@Autowired
 	NotaPromissoriaService notaPromissoriaService;
+	
+	@GetMapping(value = "/{id}")
+	public ResponseEntity<NotaPromissoria> findCliente(@PathVariable Long id) {
+		return ResponseEntity.status(HttpStatus.OK).body(notaPromissoriaService.findNota(id));
+	}
 	
 	@PostMapping
 	public ResponseEntity<NotaPromissoria> save(@RequestBody NotaPromissoriaDTO notaPromissoriaDTO) {

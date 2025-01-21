@@ -26,13 +26,34 @@ public class NotaPromissoriaService {
 	@Autowired
 	ParcelaRepository parcelaRepository;
 	
+	public NotaPromissoria findNota(Long id) {
+		var nota = notaRepository.findById(id);
+		if(!nota.isEmpty()) {
+			return verificarVencimento(nota.get());
+		}
+		return null;
+	}
+	
+	private NotaPromissoria verificarVencimento(NotaPromissoria nota) {
+		if(nota != null)
+			for (Parcela parcelaAtual : nota.getParcelas()) {
+				Boolean vencida = parcelaAtual.getVencimento().isBefore(LocalDate.now());
+				if(vencida && parcelaAtual.getStatus() == Status.ABERTA) {
+					parcelaAtual.setValorParcela(parcelaAtual.getValorParcela()*(1 + nota.getJurosAtraso()));
+					parcelaAtual.setStatus(Status.ATRASADA);
+					nota.setStatus(Status.ATRASADA);
+					parcelaRepository.save(parcelaAtual);
+				}
+			}
+		return notaRepository.save(nota);
+	}
+	
 	@Transactional
 	public NotaPromissoria save(NotaPromissoriaDTO notaPromissoriaDTO) {
 		return notaRepository.save(processarNota(notaPromissoriaDTO));
 
 	}
 
-	
 	private NotaPromissoria processarNota(NotaPromissoriaDTO dto) {
         NotaPromissoria notaSalva = new NotaPromissoria();
         notaSalva.setCliente(clienteService.findCliente(dto.idCliente()));
