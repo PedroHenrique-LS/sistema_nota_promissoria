@@ -1,12 +1,15 @@
 package com.faculdade.sistema_nota_promissoria.service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.faculdade.sistema_nota_promissoria.dtos.NotaPromissoriaDTO;
+import com.faculdade.sistema_nota_promissoria.dtos.PagamentoNotaDTO;
 import com.faculdade.sistema_nota_promissoria.enums.Status;
+import com.faculdade.sistema_nota_promissoria.enums.TipoPagamento;
 import com.faculdade.sistema_nota_promissoria.model.NotaPromissoria;
 import com.faculdade.sistema_nota_promissoria.model.Parcela;
 import com.faculdade.sistema_nota_promissoria.repository.NotaPromissoriaRepository;
@@ -89,5 +92,43 @@ public class NotaPromissoriaService {
         	data = data.minusDays(3);
         return data;
     }
+	
+public void pagarParcela(Long notaPromissoriaId, PagamentoNotaDTO pagamentoNotaDTO) {
+		
+		Optional<Parcela> parceOptional = parcelaRepository.findProximaParcelaNaoPaga(notaPromissoriaId);
+		
+		if(parceOptional.isEmpty()) {
+			NotaPromissoria notaPromissoria = findNota(notaPromissoriaId);
+			notaPromissoria.setStatus(Status.FECHADA);
+			notaRepository.save(notaPromissoria);
+			throw new IllegalArgumentException("Não há parcelas pendentes para esta nota promissória.");
+		}
+			
+
+		//próxima parcela não paga
+		Parcela parcela = parceOptional.get();
+
+		// Valida se o valor pago é suficiente
+		Double valorPago = pagamentoNotaDTO.valorPago();
+		Double valorTotal = parcela.getValorParcela();
+		if (LocalDate.now().isAfter(parcela.getVencimento()) & parcela.getStatus() != Status.ATRASADA) { // Se a parcela
+																											// está
+																											// atrasada
+			valorTotal += parcela.getValorParcela() * parcela.getNotaPromissoria().getJurosAtraso();
+		}
+
+		if (valorPago < valorTotal) {
+			throw new IllegalArgumentException(
+					"O valor pago é menor do que o valor total da parcela (incluindo juros, se aplicável).");
+		}
+
+		// Realiza o pagamento
+		parcela.setValorPago(valorPago);
+		parcela.setDataPagamento(LocalDate.now());
+		parcela.setStatus(Status.FECHADA); // Status de "paga"
+		parcela.setTipoPagamento(TipoPagamento.fromCodigo(pagamentoNotaDTO.tipoPagamento()));
+
+		parcelaRepository.save(parcela);
+	}
 
 }

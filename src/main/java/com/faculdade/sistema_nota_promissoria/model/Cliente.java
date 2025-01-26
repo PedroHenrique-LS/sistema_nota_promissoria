@@ -91,5 +91,4 @@ public class Cliente implements Serializable {
 		return Objects.equals(id, other.id);
 	}
 	
-
 }
