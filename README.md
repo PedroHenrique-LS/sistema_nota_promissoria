@@ -11,10 +11,6 @@
 ![jwt][JWT]
 
 
-<p align="center">
- <a href="#started">Getting Started</a> • 
- <a href="#routes">API Endpoints</a> •
-</p>
 
 <p>
 Este projeto implementa o backend de um sistema para gerenciamento de notas promissórias, permitindo que os usuários controlem suas notas, criem novas, registrem pagamentos, parcelem valores e realizem outras operações essenciais.
@@ -23,7 +19,7 @@ Desenvolvido como parte de uma disciplina do curso de graduação em Sistemas de
 </p>
 
 
-<h2 id="started">🚀 requisitos estabelecidos pelo professor</h2>
+<h2>🚀 requisitos estabelecidos pelo professor</h2>
 
 
 <h3>🙋🏽 Cliente</h3>
@@ -79,7 +75,7 @@ Desenvolvido como parte de uma disciplina do curso de graduação em Sistemas de
 - **Login**
   `POST /v1/login`
 
-<h2 id="started">🚀 Getting started</h2>
+<h2>🚀 Getting started</h2>
 
 <h3>Cloning</h3>
 
